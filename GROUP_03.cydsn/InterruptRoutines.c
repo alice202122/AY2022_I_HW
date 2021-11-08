@@ -8,8 +8,9 @@
 
 #include "project.h"
 int flagTEMP, flagLDR;
-int32 value_digit[];
-int32 media;
+extern int32 value_digit[];
+int32 media_TEMP, media_LDR;
+
 
 
 // Our global variables
@@ -33,40 +34,43 @@ CY_ISR(Custom_Timer_Count_ISR)
             
             for( int	i	=	0;	i < 5; i++ ) 
             {
-                media += (value_digit[i])/5;
+                media_TEMP += (value_digit[i])/5;
                 
             } 
-            AMux_Select(0);
+            AMux_Select(1);
         }
         if (slaveBuffer[1] == 9)
         {
             
-            for (int i= 0;  i<5; i++)
+            for (int i= 5;  i<10; i++)
             {
-                media += (value_digit[i])/5;
+                media_LDR += (value_digit[i])/5;
             }
-            AMux_Select(1);
-                
+            slaveBuffer[3] = media_TEMP>>8;
+            slaveBuffer[4] = media_TEMP & 0xFF;
+            slaveBuffer[5] = media_LDR>>8;
+            slaveBuffer[6] = media_LDR & 0xFF;
+            AMux_Select(0);
+            
+            slaveBuffer[1]= 0;   
+            
     }
     // Increment counter in slave buffer
     slaveBuffer[1]++;
-}
+}}
 
 /**
 *   This function is called when exiting the EZI2C_ISR. Here we
 *   perform all the tasks based on the requests.
 */
-void EZI2C_ISR_ExitCallback(void)
-{
+void EZI2C_ISR_ExitCallback(void){
 
     if ((slaveBuffer[0] & 0b11) == 0b11)
     
-    { 
-        
+    {         
         Pin_LED_Write(1); 
         flagTEMP=1;
-        flagLDR=1;
-        
+        flagLDR=1;        
     }
     if ((slaveBuffer[0] & 0b11)==0b00)
     {   
@@ -86,7 +90,6 @@ void EZI2C_ISR_ExitCallback(void)
         flagLDR=1;
         flagTEMP=0;
     }
-}
 }
 
     

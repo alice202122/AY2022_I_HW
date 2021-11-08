@@ -14,13 +14,16 @@
 #include "stdio.h"
 #define slaveBuffer_size 7
 uint8_t slaveBuffer[slaveBuffer_size];
-
+int32 value_digit[10];
 
 int main(void)
 {
     CyGlobalIntEnable; /* Enable global interrupts. */
-    isr_StartEx(Custom_Timer_Count_ISR);
     
+    isr_StartEx(Custom_Timer_Count_ISR);
+    AMux_Start();
+    AMux_Select(0);
+    ADC_DelSig_Start();
     Timer_ADC_Start();
     EZI2C_Start();
     slaveBuffer[2] = 0xBC;
