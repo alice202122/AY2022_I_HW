@@ -11,15 +11,19 @@
 */
 #include "project.h"
 #include "InterruptRoutines.h"
+#include "stdio.h"
 #define slaveBuffer_size 7
 uint8_t slaveBuffer[slaveBuffer_size];
+
 
 int main(void)
 {
     CyGlobalIntEnable; /* Enable global interrupts. */
     isr_StartEx(Custom_Timer_Count_ISR);
+    
     Timer_ADC_Start();
     EZI2C_Start();
+    slaveBuffer[2] = 0xBC;
     EZI2C_SetBuffer1(slaveBuffer_size, 2, slaveBuffer);
 
     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
