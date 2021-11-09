@@ -15,6 +15,7 @@
 #define slaveBuffer_size 7
 uint8_t slaveBuffer[slaveBuffer_size];
 int32 value_digit[10];
+int8 slaveCounter;
 
 int main(void)
 {
