@@ -5,13 +5,10 @@
 
 // Include required header files
 #include "InterruptRoutines.h" 
-
 #include "project.h"
 int flagTEMP, flagLDR;
 extern int32 value_digit[];
 int32 media_TEMP, media_LDR;
-
-
 
 // Our global variables
 
@@ -23,48 +20,84 @@ CY_ISR(Custom_Timer_Count_ISR)
 {
     // Read timer status register to pull interrupt line low
     Timer_ADC_ReadStatusRegister();
-        if (( flagLDR==1) & (flagTEMP==1))
+    if (( flagLDR==1) & (flagTEMP==1))
+    AMux_Select(0);
+   
+    {
+        value_digit[slaveCounter] = ADC_DelSig_Read32();
+        if (value_digit[slaveCounter] < 0) value_digit[slaveCounter] = 0;
+        if (value_digit[slaveCounter] > 65535) value_digit[slaveCounter] = 65535;
+                
+        if (slaveCounter == 4)
+        {  
+            for( int	i	=	0;	i < 5; i++ ) 
+            {
+                media_TEMP += (value_digit[i])/5;
+            } 
+            AMux_Select(1);
+            
+        }
+        
+        if (slaveCounter== 9)
         {
-            if (slaveCounter==0)
-            {
-                value_digit[slaveCounter] = ADC_DelSig_Read32();
-                if (value_digit[slaveCounter] < 0) value_digit[slaveCounter] = 0;
-                if (value_digit[slaveCounter] > 65535) value_digit[slaveCounter] = 65535;
-            
-            }
-            if (slaveCounter == 4)
-            {     
-                
-                for( int	i	=	0;	i < 5; i++ ) 
-                {
-                    media_TEMP += (value_digit[i])/5;
-                    
-                } 
-                AMux_Select(1);
-            }
-            
-            if (slaveCounter== 9)
-            {
-                
-                for (int i= 5;  i<10; i++)
+            for (int i= 5;  i<10; i++)
                 {
                     media_LDR += (value_digit[i])/5;
                 }
                 slaveBuffer[3] = media_TEMP>>8;
+               
                 slaveBuffer[4] = media_TEMP & 0xFF;
                 slaveBuffer[5] = media_LDR>>8;
                 slaveBuffer[6] = media_LDR & 0xFF;
-                
                 AMux_Select(0);
                 slaveCounter=0;     
-                               
-            }
-        }
-        
+        } 
+    }
     
-    // Increment counter 
-    slaveCounter++;
+    //2 condizione
+    
+    if (( flagLDR==0) & (flagTEMP==1))
+    {
+        
+        AMux_Select(0);
+        if (slaveCounter == 4)
+        {     
+            for( int	i	=	0;	i < 5; i++ ) 
+            {
+                media_TEMP += (value_digit[i])/5;
+            } 
+                
+            slaveBuffer[3] = media_TEMP>>8;
+            slaveBuffer[4] = media_TEMP & 0xFF;
+            slaveCounter=0;
+            }
+    }
+    //3 condizione
+    if (( flagLDR==1) & (flagTEMP==0))
+    {
+        AMux_Select(1);
+        if (slaveCounter == 4)
+        {     
+            for( int	i	=	0;	i < 5; i++ ) 
+            {
+                media_TEMP += (value_digit[i])/5;
+            }  
+            slaveBuffer[5] = media_LDR>>8;
+            slaveBuffer[6] = media_LDR & 0xFF;
+            
+            slaveCounter=0;
+        }
+    }
+    //incremento il timer 
+    
+   
+ slaveCounter++;
+        
 }
+        
+            
+        
+
 
 /**
 *   This function is called when exiting the EZI2C_ISR. Here we
