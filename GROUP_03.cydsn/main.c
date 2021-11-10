@@ -15,6 +15,7 @@
 #define slaveBuffer_size 7
 uint8_t slaveBuffer[slaveBuffer_size];
 int32 value_digit[10];
+uint8_t slaveCounter;
 
 int main(void)
 {
@@ -27,7 +28,7 @@ int main(void)
     Timer_ADC_Start();
     EZI2C_Start();
     slaveBuffer[2] = 0xBC;
-    slaveBuffer[1]=-1;
+    slaveCounter=-1;
     EZI2C_SetBuffer1(slaveBuffer_size, 2, slaveBuffer);
 
     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
