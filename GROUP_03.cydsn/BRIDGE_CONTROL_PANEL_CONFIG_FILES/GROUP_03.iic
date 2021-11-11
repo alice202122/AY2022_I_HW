@@ -1,0 +1,19 @@
+w 08 00 17 p ;w determines the start of the communication.   
+; 08 is the address of the EZI2C, 00 is the control register 0 address. 
+;the next command represent the content of the control register 0
+;if it is set to 17(hexadecimal), it corresponds to the succession of bits: 010111,  
+;where the first four bits represents the number of samples to average(in our case 5) 
+;and the last two bits represent the status (in this case they are set to 11-the LED is ON).
+;p determines the stop of the communication.
+W 08 03 P r 08 @1temp @0temp @1ldr @0ldr p
+; the third command of this line (03) represents the register addressed 0x03.
+; the command starting with r( reading) allows us to read the values from the sensors(in hexadecimal)
+; in our case having two sensors, 5 samples each, by changing the status bits values (01, 10) 
+;we show the other configurations; in particular:
+w 08 00 16 p ;16 (hexadecimal), corresponds to the succession of bits: 010110 
+; we only read the values relative to the Temperature sensor
+w 08 00 15 p; 15(hexadecimal), corresponds to the succession of bits: 010101
+; we only read the values relative to the LDR sensor
+
+
+
