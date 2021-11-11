@@ -9,6 +9,7 @@
  *
  * ========================================
 */
+/*BEFORE PROGRAMMING, IT IS NECESSARY TO ADD THE ANNOTATION LIBRARY*/
 #include "project.h"
 #include "InterruptRoutines.h"
 #include "stdio.h"
