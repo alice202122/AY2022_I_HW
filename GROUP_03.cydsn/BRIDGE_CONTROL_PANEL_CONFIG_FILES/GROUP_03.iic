@@ -11,9 +11,11 @@ W 08 03 P r 08 @1temp @0temp @1ldr @0ldr p
 ; in our case having two sensors, 5 samples each, by changing the status bits values (01, 10) 
 ;we show the other configurations; in particular:
 w 08 00 16 p ;16 (hexadecimal), corresponds to the succession of bits: 010110 
-; we only read the values relative to the Temperature sensor
-w 08 00 15 p; 15(hexadecimal), corresponds to the succession of bits: 010101
+W 08 03 P r 08 @0temp @0temp @0ldr @0ldr p
 ; we only read the values relative to the LDR sensor
+w 08 00 15 p; 15(hexadecimal), corresponds to the succession of bits: 010101
+W 08 03 P r 08 @0temp @0temp @0ldr @0ldr p
+; we only read the values relative to the Temperature sensor
 
 
 

@@ -23,7 +23,7 @@ CY_ISR(Custom_Timer_Count_ISR)
     // Read timer status register to pull interrupt line low
     Timer_ADC_ReadStatusRegister(); // used  to read the status register value
     //1 case: Temperature and Light signals are sampled
-    if (( flagLDR==1) & (flagTEMP==1)) // both channels are set to 1
+    if (( flagLDR==1) & (flagTEMP==1)) // the status bits of the control resgister 0x00 are both set to 1
     {
         if (slaveCounter==0) AMux_Select(0); // to check that if the counter=0 the multiplexer is setted to the first channel
        
@@ -39,7 +39,7 @@ CY_ISR(Custom_Timer_Count_ISR)
                 media_TEMP += (value_digit[i]);
             } 
             media_TEMP= media_TEMP/5;
-            AMux_Select(1); // at this point we switch to the 2 channel of the multiplexer to acquire the light signal
+            AMux_Select(1); // at this point we switch to the second channel of the multiplexer to acquire the light signal
             
         }
         
@@ -56,14 +56,14 @@ CY_ISR(Custom_Timer_Count_ISR)
                 slaveBuffer[4] = media_TEMP & 0xFF;  //We store the least significant Temperature related Bits in the 0x04 register
                 slaveBuffer[5] = media_LDR>>8; //We store the most significant Light related Bits in the 0x05 register 
                 slaveBuffer[6] = media_LDR & 0xFF; //We store the least significant Light related Bits in the 0x06 register 
-                AMux_Select(0); // at this point we switch to the 1 channel of the multiplexer in order to restart the data acquisition
+                AMux_Select(0); // at this point we switch to the first channel of the multiplexer in order to restart the data acquisition
                 slaveCounter=-1; // we reset the counter    
         } 
     }
     
     //2 case: Only temperature signals are sampled
     
-    if (( flagLDR==0) & (flagTEMP==1)) // Channel 0 is set to 1, channel 1 is set to 0.
+    if (( flagLDR==0) & (flagTEMP==1)) // status bit 1 is set to 0 and status bit 0 is set to 1. 
     {
         slaveBuffer[5]= 0;
         slaveBuffer[6] =0;
@@ -81,7 +81,7 @@ CY_ISR(Custom_Timer_Count_ISR)
             }
     }
     //3 case: Only light signals are sampled
-    if (( flagLDR==1) & (flagTEMP==0)) // Channel 0 is set to 0, channel 1 is set to 1
+    if (( flagLDR==1) & (flagTEMP==0)) // status bit 1 is set to 1 and status bit 0 is set to 0. 
     {
         slaveBuffer[3]= 0;
         slaveBuffer[4] =0;
